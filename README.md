@@ -1,20 +1,37 @@
-# dev
-Currently developing the Spreza web app
+# Spreza
+This is a MEAN web application which interfaces any speech recognition engine to provide an end-to-end transcription platform.
 
+Allows multiple users to upload or link audio files to be transcribed, and an interface to play audio and edit the transcript.
 
-##Requirements
+Requires a speech recognition service to function.
 
-Local:
+## Requirements
 
-MongoDB
-Node.js
-NPM
+### Local:
+
+Node.js 6+
+
+NPM 3+
+
 FFMPEG
 
+MongoDB client (server can be remote hosted)
 
-##CI
 
-All pushes to staging will be deployed and tested live @ spreza.ca
+### Additional (Cloud / Local replacement):
 
-Code must be reviewed before merging into master, which deploys live @ spreza.co
+(AWS SQS / RabbitMQ or Celery) for job queue
+(AWS SES / MailDev) for mailing
 
+Currently configured to use my fork of the kaldi-gstreamer-server
+
+https://github.com/skoocda/kaldi-gstreamer-server
+
+Which is a single master + queue manager, multi-worker architecture.
+
+
+## CI
+
+This project uses Gulp for building, packaging, and optionally for deployment.
+
+A server/config.js file is required to specify local parameters

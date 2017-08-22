@@ -1,0 +1,81 @@
+<!-- Navigation header -->
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <!-- Header collapse section -->
+        <div class="navbar-header">
+            <button *ngIf="isAuth" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!-- Navigation company logo -->
+            <a routerLink="/" class="navbar-brand spreza-svg-navbar-logo">
+                <img alt="Logo" src="img/spreza_logo.svg">
+                <p>Spreza</p>
+            </a>
+        </div>
+        <!-- Header navigation bar -->
+        <div *ngIf="isAuth" id="navbar" class="navbar-collapse collapse">
+            <!-- Navigation bar for authenticated users -->
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        {{accountName}}
+                        <b class="caret"></b>
+                    </a>
+                    <!-- Navigation dropdown -->
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a routerLink="/profile">
+                                <i class="fa fa-home" aria-hidden="true"></i>
+                                My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" (click)="onClickFeedback()">
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+                                Feedback
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" (click)="logout()">
+                                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                Log Out
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Feedback modal -->
+<modal #feedbackModalReference>
+    <modal-header id="notification" [show-close]="true">
+        <h4 class="modal-title">
+            <i class="fa fa-comments"></i>
+            Feedback
+        </h4>
+    </modal-header>
+    <modal-body>
+        <form [formGroup]="feedbackForm" (ngSubmit)="onSubmitFeedback()" class="form panel-body no-padding-top" novalidate>
+            <div class="form-group">
+                <textarea formControlName="feedback" class="form-control" name="body" placeholder="Feedback&#x0a;&#x0a;How can we make Spreza better for you? What changes would you like to see? Find any bugs?&#x0a;&#x0a;Let us know!" rows="7" required></textarea>
+            </div>
+            <template [ngIf]="!isButtonActive">
+                <button class="btn btn-block btn-primary pull-right" type="submit">
+                    <i class="fa fa-share" aria-hidden="true"></i>
+                    Send
+                </button>
+            </template>
+            <template [ngIf]="isButtonActive">
+                <button class="btn btn-block btn-normal pull-right disabled" type="submit">
+                    <i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i>
+                    Send
+                </button>
+            </template>
+        </form>
+    </modal-body>
+</modal>

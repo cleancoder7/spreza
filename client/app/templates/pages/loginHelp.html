@@ -1,0 +1,72 @@
+<!-- Navigation bar -->
+<navbar></navbar>
+<!-- Main content -->
+<div class="container">
+    <br>
+    <div class="well">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <!-- Page header title -->
+                <div class="text-center">
+                    <h3 class="no-margin-top">Login Assistance</h3>
+                    <h5>Password Reset or Account Verification</h5>
+                </div>
+                <!-- Login help form section -->
+                <form [formGroup]="accountServiceForm" (ngSubmit)="onSubmit()" novalidate>
+                    <!-- Email field -->
+                    <div class="form-group" [ngClass]="{'has-error': !accountServiceForm.controls['email'].valid && accountServiceForm.controls['email'].value}">
+                        <label class="control-label">Your Email</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </span>
+                            <input id="email" type="text" class="form-control" placeholder="eg: john@example.com" formControlName="email">
+                        </div>
+                        <template [ngIf]="!accountServiceForm.controls['email'].valid && accountServiceForm.controls['email'].value">
+                            <p class="text-error">
+                                Please enter a valid email address
+                            </p>
+                        </template>
+                    </div>
+                    <!-- Service select -->
+                    <div class="form-group">
+                        <label class="control-label">Select a Service</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-tasks" aria-hidden="true"></i>
+                            </span>
+                            <select id="service" class="form-control" formControlName="service" [ngClass]="{'select-placeholder': accountServiceForm.controls['service'].pristine}">
+                                <option value="~" hidden>Please Select</option>
+                                <option value="RESET">Reset my Password</option>
+                                <option value="VERIFY">Verify my Account</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Helpful information -->
+                    <p>
+                        <small>
+                            Still having problems? Contact us at <a href="mailto:info@spreza.co">info@spreza.co</a>
+                        </small>
+                    </p>
+                    <!-- Form submit button -->
+                    <div>
+                        <template [ngIf]="!isButtonActive">
+                            <button type="submit" class="btn btn-block btn-success">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                                Send Email
+                            </button>
+                        </template>
+                        <template [ngIf]="isButtonActive">
+                            <button type="submit" class="btn btn-block btn-normal disabled">
+                                <i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i>
+                                Send Email
+                            </button>
+                        </template>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer></footer>

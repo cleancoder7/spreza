@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": ["es2017", "dom"],
+        "sourceMap": true,
+        "module": "system",
+        "outDir": "./build",
+        "noImplicitAny": false,
+        "removeComments": false,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
+    }
+}

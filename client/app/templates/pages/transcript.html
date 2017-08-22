@@ -1,0 +1,217 @@
+<!-- Navigation bar -->
+<navbar></navbar>
+<!-- Main content -->
+<div class="container" (window:keydown)="eventBindHotKeys($event)" (window:resize)="redrawAudioTimeline()">
+    <br>
+    <!-- Transcript section heading -->
+    <div id="transcript-editor" class="panel panel-default panel-table">
+        <div class="panel-heading title-text">
+            <div class="row">
+                <div class="col col-md-12">
+                    <b>{{transcriptName}}</b>
+                </div>
+            </div>
+        </div>
+        <!-- Transcript body editor -->
+        <div class="panel-body transcript-editor">
+            <!-- Content loading indicator -->
+            <div *ngIf="!isTranscriptLoaded()" class="text-center">
+                <i class="fa fa-refresh fa-spin fa-3x fa-fw" aria-hidden="true"></i>
+                <h4 class="loading-text">Please Wait...</h4>
+            </div>
+            <div *ngFor="let revisedParagraph of revisedDataSet; let i = index;" (dblclick)="eventEnableEditMode($event, revisedParagraph)" class="transcript-editor" [attr.id]="revisedParagraph.id">
+                <!-- View mode -->
+                <template [ngIf]="!revisedParagraph.isEditing">
+                    <div id='display-section' class="view-mode" contenteditable="false">
+                        <span *ngFor="let revisedWord of revisedParagraph.paragraph">
+                            <template [ngIf]="revisedWord.word">
+                                <span (mouseover)="eventHoverOverWord(revisedWord)" (click)="eventClickWord(revisedWord)" (mouseleave)="eventHoverExitWord(revisedWord)" 
+                                        [ngClass]="{'word-hovering': revisedWord.isHovering, 'word-highlight': revisedWord.isHighlighted}">
+                                    {{revisedWord.word}}
+                                </span>
+                                <span></span>
+                            </template>
+                        </span>
+                    <div>
+                </template>
+                <!-- Edit mode -->
+                <template [ngIf]="revisedParagraph.isEditing">
+                    <div id='editable-section' class="edit-mode" (keydown)="eventEditorKeydown($event)" (blur)="eventDisableEditMode()" contenteditable="true">
+                        <span *ngFor="let revisedWord of revisedParagraph.paragraph" (DOMNodeRemoved)="eventDeleteWord(revisedParagraph.id, revisedWord.id)" [attr.id]="revisedWord.id">
+                            <template [ngIf]="revisedWord.word">
+                                {{revisedWord.word + ' '}}
+                            </template>
+                        </span>
+                    </div>
+                </template>
+                <br *ngIf="i < revisedDataSet.length - 1">
+            </div>
+        </div>
+    </div>
+</div>
+<textarea #clipboardReference class="hide-clipboard-offscreen">{{textContent}}</textarea>
+<!-- Audio wave player section -->
+<nav class="navbar-fixed-bottom">
+    <div id="transcript-audio-player" class="panel panel-default audio-player-panel">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col col-md-12">
+                    <!-- Toolbar for transcript controls and media controls -->
+                    <div class="btn-group">
+                        <button (click)="eventToggleHelp()" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Help<br>(F1)">
+                            <i class="fa fa-question-circle"></i>
+                        </button>
+                        <button (click)="eventCopyToClipboard()" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Copy to Clipboard<br>(CTRL + C)">
+                            <i class="fa fa-clipboard"></i>
+                        </button>
+                        <button (click)="eventSave()" type="button" class="btn" [ngClass]="{'btn-danger': isTranscriptModified, 'btn-default': !isTranscriptModified}" data-toggle="tooltip" data-placement="top" title="Save Changes<br>(CTRL + S)">
+                            <template [ngIf]="!isSaving">
+                                <i class="fa fa-floppy-o"></i>
+                            </template>
+                            <template [ngIf]="isSaving">
+                                <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                            </template>
+                        </button>
+                    </div>&nbsp;&nbsp;&nbsp;
+                    <div class="btn-group">
+                        <button (click)="eventAudioRewind()" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Skip Back<br>(F7)">
+                            <i class="fa fa-backward"></i>
+                        </button>
+                        <button (click)="eventTogglePlayAudio()" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Toggle Play or Pause<br>(SHIFT + SPACE)">
+                            <template [ngIf]="!isAudioPlaying">
+                                <i class="fa fa-play"></i>
+                            </template>
+                            <template [ngIf]="isAudioPlaying">
+                                <i class="fa fa-pause"></i>
+                            </template>
+                        </button>
+                        <button (click)="eventAudioForward()" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Skip Forward<br>(F8)">
+                            <i class="fa fa-forward"></i>
+                        </button>
+                    </div>&nbsp;&nbsp;&nbsp;
+                    <popover-content #myPopover placement="top" [closeOnClickOutside]="true">
+                        <!-- Playback speed slider -->
+                        Adjust Playback Speed
+                        <input #speedSliderReference (change)="eventAdjustAudioSpeed()" (input)="eventAdjustAudioSpeed()" type="range" value="1.00" min="0.50" max="2.00" step="0.25" />
+                    </popover-content>
+                    <div class= "pull-right toolbar-indicator">
+                        <b [popover]="myPopover">
+                            Speed: {{audioSpeed}}
+                        </b>
+                        &nbsp;|&nbsp;
+                        <b>Time: {{audioSeekTime}}</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body" [ngClass]="{'panel-body-no-padding': percentAudioLoaded < 100}">
+            <div *ngIf="percentAudioLoaded < 100" class="progress">
+                <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" [ngStyle]="{'width': percentAudioLoaded + '%'}">
+                    {{percentAudioLoaded}}%
+                </div>
+            </div>
+            <div id="audiowave" [ngClass]="{'hide': percentAudioLoaded < 100}"></div>
+        </div>
+    </div>
+</nav>
+<!-- Footer -->
+<footer></footer>
+<!-- Help modal -->
+<modal #helpModalReference (onDismiss)="eventToggleHelp()">
+    <modal-header id="notification" [show-close]="true">
+        <h4 class="modal-title">
+            <i class="fa fa-question-circle"></i>
+            Help
+        </h4>
+    </modal-header>
+    <modal-body>
+        <table class="table help-modal no-margin-bottom">
+            <tbody>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-question-circle"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <kbd>F1</kbd>
+                    </td>
+                    <td>
+                        Display the help page.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-floppy-o"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <kbd>CTRL + S</kbd>
+                    </td>
+                    <td>
+                        Save any modifications to the transcript.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-clipboard"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <kbd>CTRL + C</kbd>
+                    </td>
+                    <td>
+                        Copy the transcript to the clipboard.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-backward"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <kbd>F7</kbd>
+                    </td>
+                    <td>
+                        Rewind by <b>3</b> seconds.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-pause"></i>
+                        </button>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-play"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <kbd>SHIFT + SPACE</kbd>
+                    </td>
+                    <td>
+                        Toggle Play or Pause audio.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default">
+                            <i class="fa fa-forward"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <kbd>F8</kbd>
+                    </td>
+                    <td>
+                        Skip forward by <b>3</b> seconds.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </modal-body>
+    <modal-footer>
+        <button type="button" class="btn btn-primary" (click)="eventToggleHelp()">Close</button>
+    </modal-footer>
+</modal>

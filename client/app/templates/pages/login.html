@@ -1,0 +1,78 @@
+<!-- Navigation bar -->
+<navbar></navbar>
+<!-- Main content -->
+<div class="container">
+    <br>
+    <div class="well">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <!-- Page header title -->
+                <div class="text-center">
+                    <h3 class="no-margin-top">Welcome Back!</h3>
+                    <h5>Log In to continue...</h5>
+                </div>
+                <!-- Login form section -->
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+                    <!-- Email field -->
+                    <div class="form-group" [ngClass]="{'has-error': !loginForm.controls['email'].valid && loginForm.controls['email'].value}">
+                        <label class="control-label">Your Email</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </span>
+                            <input id="email" type="text" class="form-control" placeholder="eg: john@example.com" formControlName="email">
+                        </div>
+                        <template [ngIf]="!loginForm.controls['email'].valid && loginForm.controls['email'].value">
+                            <p class="text-error">
+                                Please enter a valid email address
+                            </p>
+                        </template>
+                    </div>
+                    <!-- Password field -->
+                    <div class="form-group" [ngClass]="{'has-error': !loginForm.controls['password'].valid && loginForm.controls['password'].value}">
+                        <label class="control-label">Your Password</label>
+                        <div class="input-group">
+                           <span class="input-group-addon">
+                               <i class="fa fa-key" aria-hidden="true"></i>
+                           </span>
+                           <input id="password" type="password" class="form-control" placeholder="eg: ************" formControlName="password">
+                       </div>
+                       <template [ngIf]="!loginForm.controls['password'].valid && loginForm.controls['password'].value">
+                           <p class="text-error">
+                               Minimum 8 characters with at least 1 letter and 1 number
+                           </p>
+                       </template>
+                    </div>
+                    <!-- Helpful information -->
+                    <p class="no-margin-bottom">
+                        <small>
+                            Having issues logging in? <a routerLink="/login/help">Click here</a>
+                        </small>
+                    </p>
+                    <p>
+                        <small>
+                            Don't have a Spreza account? <a routerLink="/signup">Click here</a>
+                        </small>
+                    </p>
+                    <!-- Form submit button -->
+                    <div class="text-center">
+                        <template [ngIf]="!isButtonActive">
+                            <button type="submit" class="btn btn-block btn-success">
+                                <i class="fa fa-sign-in" aria-hidden="true"></i>
+                                Log In
+                            </button>
+                        </template>
+                        <template [ngIf]="isButtonActive">
+                            <button type="submit" class="btn btn-block btn-normal disabled">
+                                <i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i>
+                                Log In
+                            </button>
+                        </template>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer></footer>
